@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Encuesta Institucional — Personal Docente y No Docente · ISLI</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --azul:#1a3a5c;--azul-l:#2a5a8c;--azul-pale:#e8f0f8;
+  --dorado:#9a7b3a;--dorado-l:#c4a45a;
+  --papel:#f7f4ef;--papel-d:#ede9e0;
+  --texto:#1c1c1c;--suave:#4a4a4a;--borde:#d4cfc4;--foco:#2a5a8c;
+  --error:#c0392b;--r:6px;
+  --serif:'EB Garamond',Georgia,serif;
+  --sans:'Inter',system-ui,sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--sans);background:var(--papel);color:var(--texto);font-size:15px;line-height:1.6;min-height:100vh}
+
+.site-header{background:var(--azul);color:#fff;padding:22px 24px;border-bottom:3px solid var(--dorado)}
+.header-inner{max-width:680px;margin:0 auto;display:flex;align-items:center;gap:18px}
+.header-logo{width:56px;height:56px;object-fit:contain;filter:drop-shadow(0 2px 4px rgba(0,0,0,.3));flex-shrink:0}
+.header-text .eyebrow{font-size:10px;letter-spacing:.12em;text-transform:uppercase;color:var(--dorado-l);margin-bottom:4px}
+.header-text h1{font-family:var(--serif);font-size:clamp(17px,3vw,23px);font-weight:500;line-height:1.2}
+.header-text .sub{font-size:12px;color:rgba(255,255,255,.65);margin-top:3px}
+@media(max-width:480px){.header-inner{flex-direction:column;text-align:center}.header-logo{width:48px;height:48px}}
+
+.intro-wrap{max-width:680px;margin:22px auto 0;padding:0 16px}
+.intro-card{background:#fff;border:1px solid var(--borde);border-left:4px solid var(--dorado);border-radius:var(--r);padding:16px 20px;font-size:13.5px;color:var(--suave);line-height:1.7}
+.intro-card strong{color:var(--texto)}
+
+.progress-wrap{max-width:680px;margin:18px auto 0;padding:0 16px}
+.progress-top{display:flex;justify-content:space-between;margin-bottom:5px}
+.progress-top span{font-size:12px;color:var(--suave)}
+.progress-bar{height:5px;background:var(--borde);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;background:var(--dorado);border-radius:3px;transition:width .35s ease}
+
+.card-wrap{max-width:680px;margin:20px auto 60px;padding:0 16px}
+.card{background:#fff;border:1px solid var(--borde);border-radius:var(--r);padding:28px 28px 24px;display:none;animation:fadeIn .2s ease}
+.card.active{display:block}
+@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.card-tag{font-size:10px;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--dorado);margin-bottom:6px}
+.card-q{font-family:var(--serif);font-size:clamp(17px,3vw,21px);font-weight:500;color:var(--azul);line-height:1.35;margin-bottom:6px}
+.card-hint{font-size:13px;color:var(--suave);font-style:italic;margin-bottom:16px}
+
+.opts{list-style:none;display:flex;flex-direction:column;gap:7px;margin-top:4px}
+.opt label{display:flex;align-items:flex-start;gap:11px;cursor:pointer;padding:11px 14px;border-radius:var(--r);border:1.5px solid var(--borde);background:var(--papel);transition:all .15s;font-size:14px;line-height:1.45}
+.opt label:hover{background:var(--azul-pale);border-color:var(--foco)}
+.opt input[type=radio],.opt input[type=checkbox]{accent-color:var(--azul);width:16px;height:16px;flex-shrink:0;margin-top:2px;cursor:pointer}
+.opt:has(input:checked) label{background:var(--azul-pale);border-color:var(--azul)}
+.opt:has(input:checked) label span{color:var(--azul);font-weight:500}
+
+.otro-input{width:100%;border:1.5px solid var(--borde);border-radius:4px;padding:9px 12px;font-family:var(--sans);font-size:14px;background:var(--papel);margin-top:6px;display:none}
+.otro-input.show{display:block}
+.otro-input:focus{outline:none;border-color:var(--foco);background:#fff}
+
+.q-textarea{width:100%;min-height:100px;border:1.5px solid var(--borde);border-radius:var(--r);padding:11px 14px;font-family:var(--sans);font-size:14px;background:var(--papel);resize:vertical;line-height:1.5}
+.q-textarea:focus{outline:none;border-color:var(--foco);background:#fff}
+
+.clima-row{padding:12px 0;border-bottom:1px solid var(--papel-d)}
+.clima-row:last-child{border-bottom:none}
+.clima-label{font-size:13.5px;font-weight:500;color:var(--azul);margin-bottom:8px}
+.clima-opts{display:flex;flex-wrap:wrap;gap:6px}
+.clima-opts label{display:flex;align-items:center;gap:7px;padding:7px 12px;border:1.5px solid var(--borde);border-radius:5px;cursor:pointer;font-size:12.5px;background:var(--papel);transition:all .15s}
+.clima-opts label:hover{background:var(--azul-pale);border-color:var(--foco)}
+.clima-opts label:has(input:checked){background:var(--azul-pale);border-color:var(--azul);font-weight:500;color:var(--azul)}
+.clima-opts input{accent-color:var(--azul);width:14px;height:14px;flex-shrink:0}
+
+.warn{display:none;color:var(--error);font-size:12px;margin-top:7px;font-weight:500}
+
+.nav-row{display:flex;justify-content:space-between;align-items:center;margin-top:24px;gap:10px}
+.btn{font-family:var(--sans);font-size:14px;font-weight:500;padding:11px 24px;border-radius:var(--r);border:none;cursor:pointer;transition:all .15s}
+.btn-prev{background:transparent;color:var(--suave);border:1.5px solid var(--borde)}
+.btn-prev:hover{background:var(--papel-d)}
+.btn-next{background:var(--azul);color:#fff;margin-left:auto}
+.btn-next:hover{background:var(--azul-l)}
+.btn-submit{background:var(--dorado);color:#fff;margin-left:auto}
+.btn-submit:hover{background:var(--dorado-l)}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+#submit-state{display:none;text-align:center;padding:48px 20px;max-width:680px;margin:0 auto}
+#submit-state.show{display:block}
+.s-icon{font-size:52px;margin-bottom:14px}
+.s-title{font-family:var(--serif);font-size:26px;color:var(--azul);margin-bottom:10px}
+.s-msg{font-size:14px;color:var(--suave);max-width:460px;margin:0 auto;line-height:1.7}
+
+.site-footer{text-align:center;padding:16px;font-size:11px;color:var(--suave);border-top:1px solid var(--borde);margin-top:20px}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <img src="data:image/png;base64,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" alt="ISLI" class="header-logo">
+    <div class="header-text">
+      <div class="eyebrow">Encuesta institucional · Diagnóstico</div>
+      <h1>Instituto Superior La Inmaculada</h1>
+      <div class="sub">Personal Docente y No Docente · Demanda educativa y formatos de cursada</div>
+    </div>
+  </div>
+</header>
+
+<div class="intro-wrap">
+  <div class="intro-card">
+    Esta encuesta forma parte de un proyecto institucional orientado a fortalecer y acompañar el desarrollo del Nivel Superior de la institución.<br>
+    Sus respuestas son <strong>anónimas</strong> y serán utilizadas únicamente con fines institucionales. Le pedimos que responda con sinceridad — su mirada es un aporte valioso para este proceso.
+  </div>
+</div>
+
+<div class="progress-wrap" id="progress-wrap">
+  <div class="progress-top">
+    <span id="prog-label">Pregunta 1</span>
+    <span id="prog-pct">0%</span>
+  </div>
+  <div class="progress-bar"><div class="progress-fill" id="prog-fill"></div></div>
+</div>
+
+<div class="card-wrap" id="card-wrap">
+
+<!-- C0 · P1 · NIVEL -->
+<div class="card active" id="c0">
+  <div class="card-tag">Datos de contexto</div>
+  <div class="card-q">1. ¿En qué nivel o niveles se desempeña en el Instituto La Inmaculada?</div>
+  <div class="card-hint">Puede marcar más de una opción.</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="checkbox" name="p1" value="Nivel Inicial"><span>Nivel Inicial</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p1" value="Nivel Primario"><span>Nivel Primario</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p1" value="Nivel Secundario"><span>Nivel Secundario</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p1" value="Nivel Superior"><span>Nivel Superior</span></label></li>
+  </ul>
+  <div class="warn" id="w-p1">Por favor seleccione al menos una opción.</div>
+  <div class="nav-row"><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C1 · P2 · CARRERA (solo Nivel Superior) -->
+<div class="card" id="c1">
+  <div class="card-tag">Nivel Superior</div>
+  <div class="card-q">2. ¿En qué carrera del Nivel Superior del Instituto se desempeña?</div>
+  <div class="card-hint">Puede marcar más de una opción.</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="checkbox" name="p2" value="Profesorado de Educación Primaria"><span>Profesorado de Educación Primaria</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p2" value="Profesorado de Educación Especial"><span>Profesorado de Educación Especial</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p2" value="Tecnicatura Superior en Gastronomía"><span>Tecnicatura Superior en Gastronomía</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p2" value="No me desempeño en el Nivel Superior"><span>No me desempeño en el Nivel Superior</span></label></li>
+  </ul>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C2 · P3 · ANTIGÜEDAD -->
+<div class="card" id="c2">
+  <div class="card-tag">Datos de contexto</div>
+  <div class="card-q">3. ¿Cuánto tiempo hace que desarrolla su actividad profesional en la institución?</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="radio" name="p3" value="Menos de 5 años"><span>Menos de 5 años</span></label></li>
+    <li class="opt"><label><input type="radio" name="p3" value="Entre 5 y 10 años"><span>Entre 5 y 10 años</span></label></li>
+    <li class="opt"><label><input type="radio" name="p3" value="Entre 10 y 20 años"><span>Entre 10 y 20 años</span></label></li>
+    <li class="opt"><label><input type="radio" name="p3" value="Más de 20 años"><span>Más de 20 años</span></label></li>
+  </ul>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C3 · P4 · POR QUÉ DOCENTE -->
+<div class="card" id="c3">
+  <div class="card-tag">Motivación profesional</div>
+  <div class="card-q">4. ¿Por qué eligió estudiar para ser docente?</div>
+  <div class="card-hint">Marque la opción principal.</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="radio" name="p4" value="Por el salario"><span>Por el salario</span></label></li>
+    <li class="opt"><label><input type="radio" name="p4" value="Familia docente, ámbito conocido"><span>Porque mi familia está conformada por docentes y era un ámbito que ya conocía</span></label></li>
+    <li class="opt"><label><input type="radio" name="p4" value="Por recomendación de un familiar"><span>Por recomendación de un familiar</span></label></li>
+    <li class="opt"><label><input type="radio" name="p4" value="Por recomendación de un amigo/a"><span>Por recomendación de un amigo/a</span></label></li>
+    <li class="opt"><label><input type="radio" name="p4" value="Lo que quería no estaba disponible en la zona"><span>Lo que quería estudiar no estaba disponible en la zona, así que busqué la opción que más se acercara</span></label></li>
+    <li class="opt"><label><input type="radio" name="p4" value="Siempre quise ser docente"><span>Ya había identificado años antes que quería ser docente</span></label></li>
+    <li class="opt"><label><input type="radio" name="p4" value="Trabajo estable y sueldo fijo"><span>Por tener un trabajo estable y un sueldo fijo</span></label></li>
+    <li class="opt"><label><input type="radio" name="p4" value="otro"><span>Otro:</span></label></li>
+  </ul>
+  <input type="text" class="otro-input" id="p4_otro" placeholder="Especificá..." maxlength="200">
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C4 · P5 · DIFICULTADES PRESENCIALIDAD -->
+<div class="card" id="c4">
+  <div class="card-tag">Contexto estudiantil</div>
+  <div class="card-q">5. ¿Cuál considera que es la mayor dificultad que tienen sus alumnos para sostener la presencialidad diaria?</div>
+  <div class="card-hint">Pensando en alumnos de 16 a 25 años de municipios cercanos (San José, Azara, Concepción de la Sierra, Colonia Liebig). Máximo 2 opciones.</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="checkbox" name="p5" value="Escasos colectivos interurbanos nocturnos"><span>La escasa frecuencia o inexistencia de colectivos interurbanos en los horarios de regreso nocturno</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p5" value="Incompatibilidad con empleos o tareas rurales"><span>La incompatibilidad horaria con empleos formales, tareas estacionales rurales o informales urbanas</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p5" value="Responsabilidades familiares urgentes"><span>Las responsabilidades familiares urgentes (cuidado de hijos, hermanos menores o adultos mayores)</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p5" value="Costo de alquiler o pensión en Apóstoles"><span>El costo y dificultad económica para costear un alquiler o pensión temporal en la ciudad de Apóstoles</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p5" value="Riesgos y costos de traslado en moto"><span>Los riesgos y costos logísticos de trasladarse en motovehículos por las rutas de la región</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p5" value="Desconozco"><span>Desconozco</span></label></li>
+  </ul>
+  <div class="warn" id="w-p5">Máximo 2 opciones.</div>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C5 · P6 · CURSADA DIARIA (solo Nivel Superior) -->
+<div class="card" id="c5">
+  <div class="card-tag">Nivel Superior · Organización horaria</div>
+  <div class="card-q">6. ¿Considera que el formato tradicional de cursada diaria (lunes a viernes) es un factor que dificulta la permanencia de los estudiantes que trabajan?</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="radio" name="p6" value="Sí, totalmente. Es el principal motivo de abandono"><span>Sí, totalmente. Es el principal motivo de abandono</span></label></li>
+    <li class="opt"><label><input type="radio" name="p6" value="Sí, parcialmente. Dificulta pero se sostiene"><span>Sí, parcialmente. Dificulta la asistencia pero se sostiene</span></label></li>
+    <li class="opt"><label><input type="radio" name="p6" value="No. La presencialidad diaria es el formato más adecuado"><span>No. La presencialidad diaria sigue siendo el formato más adecuado</span></label></li>
+    <li class="opt"><label><input type="radio" name="p6" value="Desconozco, no me desempeño en el Nivel Superior"><span>Desconozco, no me desempeño en el Nivel Superior</span></label></li>
+  </ul>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C6 · P7 · CONECTIVIDAD (solo Nivel Superior) -->
+<div class="card" id="c6">
+  <div class="card-tag">Nivel Superior · Conectividad</div>
+  <div class="card-q">7. ¿Qué nivel de conectividad y equipamiento real observa en los hogares de sus alumnos para sostener un modelo híbrido?</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="radio" name="p7" value="Óptimo: computadora y buena conexión"><span><strong>Óptimo:</strong> La mayoría cuenta con computadora portátil o de escritorio y buena conexión a internet</span></label></li>
+    <li class="opt"><label><input type="radio" name="p7" value="Conectividad básica urbana: WiFi pero comparten PC"><span><strong>Conectividad básica urbana:</strong> Tienen acceso a WiFi, pero comparten una única computadora entre todo el grupo familiar</span></label></li>
+    <li class="opt"><label><input type="radio" name="p7" value="Celular-dependiente: solo datos móviles"><span><strong>Celular-dependiente:</strong> El teléfono con abono de datos móviles es la única pantalla de acceso disponible</span></label></li>
+    <li class="opt"><label><input type="radio" name="p7" value="Limitación por geografía rural sin señal"><span><strong>Limitación geográfica:</strong> Residen en colonias o áreas rurales donde la señal 4G es nula o sumamente intermitente</span></label></li>
+    <li class="opt"><label><input type="radio" name="p7" value="Brecha económica digital: no pueden costear abonos"><span><strong>Brecha económica digital:</strong> Tienen cobertura de red pero no pueden costear los abonos mensuales de internet</span></label></li>
+    <li class="opt"><label><input type="radio" name="p7" value="Desconozco"><span>Desconozco</span></label></li>
+  </ul>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C7 · P8 · MODELO HÍBRIDO (solo Nivel Superior) -->
+<div class="card" id="c7">
+  <div class="card-tag">Nivel Superior · Virtualidad</div>
+  <div class="card-q">8. Si el Instituto implementara virtualidad asincrónica en materias teóricas, ¿cuál cree que sería el esquema más viable?</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="radio" name="p8" value="Alternancia semanal: una semana presencial, una virtual"><span><strong>Alternancia semanal:</strong> Una semana presencial intensiva y una semana virtual de trabajo autónomo desde el hogar</span></label></li>
+    <li class="opt"><label><input type="radio" name="p8" value="Concentrado de fin de semana: virtual de noche + sábados presenciales"><span><strong>Fin de semana:</strong> Cursada teórica virtual durante la semana por la noche y clases prácticas presenciales únicamente los sábados</span></label></li>
+    <li class="opt"><label><input type="radio" name="p8" value="Semipresencial segmentado: 2 o 3 días presenciales + virtual"><span><strong>Semipresencial segmentado:</strong> Asistencia presencial reducida a 2 o 3 días fijos por semana para clases prácticas, dictando las teóricas de manera virtual</span></label></li>
+    <li class="opt"><label><input type="radio" name="p8" value="Mantener 100% presencial"><span><strong>Mantener 100% presencial:</strong> La virtualidad genera deserción inmediata por las brechas estructurales de conectividad</span></label></li>
+    <li class="opt"><label><input type="radio" name="p8" value="Desconozco"><span>Desconozco</span></label></li>
+  </ul>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C8 · P9 · NUEVAS CARRERAS -->
+<div class="card" id="c8">
+  <div class="card-tag">Oferta educativa regional</div>
+  <div class="card-q">9. Si el Nivel Superior tuviera que abrir nuevas carreras enfocadas en áreas de vacancia, ¿cuáles cree que tendrían mayor impacto e inscripción?</div>
+  <div class="card-hint">Máximo 3 opciones.</div>
+  <ul class="opts" id="opts-p9">
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Higiene, Seguridad Laboral y Gestión Ambiental"><span>Tecnicatura Superior en Higiene, Seguridad Laboral y Gestión Ambiental</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Turismo y Guía de Naturaleza"><span>Tecnicatura Superior en Turismo y Guía de Naturaleza</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Ciencia de Datos, Redes y Desarrollo de Software"><span>Tecnicatura Superior en Ciencia de Datos, Redes y Desarrollo de Software</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. SIG (GIS) y Teledetección Agrícola-Forestal"><span>Tecnicatura Superior en SIG (GIS) y Teledetección Agrícola-Forestal</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Tecnologías e Informática"><span>Tecnicatura Superior en Tecnologías e Informática</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Prof. Educación Secundaria en Ciencias Agrarias y Ambientales"><span>Profesorado de Educación Secundaria en Ciencias Agrarias y Ambientales</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Prof. Educación Artística"><span>Profesorado de Educación Artística</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Agronegocios y Comercialización Internacional"><span>Tecnicatura Superior en Agronegocios y Comercialización Internacional</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Energías Renovables (Biomasa y Solar)"><span>Tecnicatura Superior en Energías Renovables (Biomasa y Solar)</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Biotecnología Alimentaria y Agroindustria"><span>Tecnicatura Superior en Biotecnología Alimentaria y Agroindustria</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Gestión de Cooperativas y Economía Social"><span>Tecnicatura Superior en Gestión de Cooperativas y Economía Social</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Salud Comunitaria y Nutrición"><span>Tecnicatura Superior en Salud Comunitaria y Nutrición</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Acompañamiento Terapéutico"><span>Tecnicatura Superior en Acompañamiento Terapéutico</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Intervención en TDAH, DEA y TEA en el Aula"><span>Trayecto Corto: Intervención en TDAH, DEA y TEA en el Aula</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Nutrición y Alimentación Saludable"><span>Tecnicatura Superior en Nutrición y Alimentación Saludable</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Acompañamiento Pedagógico e Inclusión Educativa"><span>Acompañamiento Pedagógico e Inclusión Educativa</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9" value="Tec. Abordaje Integral del Adulto Mayor"><span>Tecnicatura Superior en Abordaje Integral del Adulto Mayor</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p9_otro_chk" value="otro"><span>Otras:</span></label>
+      <input type="text" class="otro-input" id="p9_otro" placeholder="Especificá..." maxlength="300"></li>
+  </ul>
+  <div class="warn" id="w-p9">Máximo 3 opciones.</div>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C9 · P10 · FACTORES INSCRIPCIÓN (NUEVA) -->
+<div class="card" id="c9">
+  <div class="card-tag">Percepción institucional</div>
+  <div class="card-q">10. Desde su rol, ¿cuáles considera que son los principales factores que influyen en la decisión de las familias de inscribir a sus hijos en el Instituto Superior La Inmaculada?</div>
+  <div class="card-hint">Máximo 3 opciones.</div>
+  <ul class="opts" id="opts-p10">
+    <li class="opt"><label><input type="checkbox" name="p10" value="Prestigio y trayectoria histórica"><span>El prestigio y la trayectoria histórica de la institución en la comunidad</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="La calidad educativa"><span>La calidad educativa</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Costo de la cuota y gastos asociados"><span>El costo de la cuota y/o los gastos asociados (materiales, uniforme, traslados)</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Cercanía geográfica"><span>La cercanía geográfica respecto al domicilio familiar</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Horarios y organización de la jornada"><span>Los horarios y la organización de la jornada escolar</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Tradición familiar"><span>La tradición familiar (padres, hermanos o familiares que ya asistieron a la institución)</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Recomendaciones de conocidos y ex alumnos"><span>Las recomendaciones de conocidos y ex alumnos</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Comunicación y difusión institucional"><span>La comunicación y difusión institucional de las propuestas educativas</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Clima institucional y vínculo percibido"><span>El clima institucional y el vínculo percibido entre docentes, directivos y estudiantes</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10" value="Desconozco"><span>Desconozco</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p10_otro_chk" value="otro"><span>Otro:</span></label>
+      <input type="text" class="otro-input" id="p10_otro" placeholder="Especificá..." maxlength="200"></li>
+  </ul>
+  <div class="warn" id="w-p10">Máximo 3 opciones.</div>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C10 · P11 · CLIMA ORGANIZACIONAL -->
+<div class="card" id="c10">
+  <div class="card-tag">Clima institucional</div>
+  <div class="card-q">11. ¿Cómo califica el clima organizacional dentro del Nivel Superior en las siguientes dimensiones?</div>
+  <div id="clima-p11"></div>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C11 · P12 · DESARROLLO PROFESIONAL (solo Nivel Superior) -->
+<div class="card" id="c11">
+  <div class="card-tag">Nivel Superior · Desarrollo profesional</div>
+  <div class="card-q">12. ¿Cómo se siente actualmente respecto a sus propios saberes para afrontar los nuevos desafíos de la educación en el Nivel Superior?</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="radio" name="p12" value="Totalmente satisfecho"><span><strong>Totalmente satisfecho:</strong> Cuento con todas las herramientas teóricas, pedagógicas y tecnológicas necesarias</span></label></li>
+    <li class="opt"><label><input type="radio" name="p12" value="Parcialmente satisfecho: necesito actualizarme en entornos virtuales"><span><strong>Parcialmente satisfecho:</strong> Poseo base sólida, pero necesito actualizarme en el uso de plataformas híbridas y entornos virtuales</span></label></li>
+    <li class="opt"><label><input type="radio" name="p12" value="Insatisfecho: los cambios tecnológicos superaron mis herramientas"><span><strong>Insatisfecho:</strong> La velocidad de los cambios tecnológicos y las nuevas demandas del alumnado superaron mis herramientas actuales</span></label></li>
+  </ul>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C12 · P13 · CAPACITACIÓN -->
+<div class="card" id="c12">
+  <div class="card-tag">Formación continua</div>
+  <div class="card-q">13. Si el Instituto ofreciera espacios de formación continua gratuita, ¿en qué área sentiría mayor interés por capacitarse?</div>
+  <ul class="opts">
+    <li class="opt"><label><input type="radio" name="p13" value="Diseño de clases híbridas y metodologías asincrónicas"><span>Diseño de clases híbridas, aulas virtuales y metodologías asincrónicas de enseñanza</span></label></li>
+    <li class="opt"><label><input type="radio" name="p13" value="Educación Ambiental, Sustentabilidad y Economía Circular"><span>Educación Ambiental transversal, Sustentabilidad y Economía Circular aplicada a las disciplinas locales</span></label></li>
+    <li class="opt"><label><input type="radio" name="p13" value="Herramientas tecnológicas: IA y software de gestión"><span>Herramientas tecnológicas de vanguardia (Inteligencia Artificial aplicada a la educación y software de gestión)</span></label></li>
+    <li class="opt"><label><input type="radio" name="p13" value="Liderazgo, gestión de equipos y resolución de conflictos"><span>Dinámicas de liderazgo, gestión de equipos y resolución de conflictos para el ámbito organizacional</span></label></li>
+    <li class="opt"><label><input type="radio" name="p13" value="otro"><span>Otro:</span></label></li>
+  </ul>
+  <input type="text" class="otro-input" id="p13_otro" placeholder="Especificá..." maxlength="200">
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C13 · P14 · MEJORAS GESTIÓN -->
+<div class="card" id="c13">
+  <div class="card-tag">Gestión institucional</div>
+  <div class="card-q">14. ¿Cuáles considera las mejoras más urgentes en la gestión institucional del Nivel Superior?</div>
+  <div class="card-hint">Seleccione únicamente las 3 opciones que considere más significativas.</div>
+  <ul class="opts" id="opts-p14">
+    <li class="opt"><label><input type="checkbox" name="p14" value="Mejora en infraestructura edilicia"><span>Mejora en la infraestructura edilicia general: aulas, climatización, espacios de descanso y sanitarios</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Inversión y actualización tecnológica"><span>Inversión y actualización tecnológica: computadoras, proyectores, laboratorios/cocinas y conectividad WiFi</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Optimización de la comunicación interna"><span>Optimización de la comunicación interna: canales más claros, dinámicos y organizados</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Acompañamiento personalizado y escucha activa al docente"><span>Acompañamiento personalizado y escucha activa al docente: mayor contención, flexibilidad y reconocimiento</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Articulación con el entorno socioproductivo"><span>Articulación con el entorno socioproductivo: convenios con empresas para prácticas, pasantías y bolsas de trabajo</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Fortalecimiento de la comunicación externa"><span>Fortalecimiento de la comunicación externa: difusión más estratégica de las carreras en municipios satelitales</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Flexibilización de formatos de cursada"><span>Flexibilización y revisión de formatos de cursada: apertura a modelos híbridos, semipresenciales o concentrados</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Fomento de trabajo colaborativo entre colegas"><span>Fomento de espacios de trabajo colaborativo entre colegas: reuniones institucionales para planificación conjunta</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Capacitación y formación continua interna"><span>Capacitación y formación continua interna: cursos, talleres y diplomaturas gratuitas con puntaje docente</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Revisión y agilización de procesos administrativos"><span>Revisión y agilización de procesos administrativos: simplificación de trámites, bedelía digitalizada y carga de notas</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Apoyo a la inclusión y diversidad estudiantil"><span>Apoyo a la inclusión y diversidad estudiantil: equipos de orientación o tutorías para alumnos con dificultades</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14" value="Transparencia en la toma de decisiones"><span>Transparencia en la toma de decisiones: mayor apertura y democratización en cambios institucionales</span></label></li>
+    <li class="opt"><label><input type="checkbox" name="p14_otro_chk" value="otro"><span>Otro:</span></label>
+      <input type="text" class="otro-input" id="p14_otro" placeholder="Especificá..." maxlength="300"></li>
+  </ul>
+  <div class="warn" id="w-p14">Máximo 3 opciones.</div>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-next" onclick="next()">Siguiente →</button></div>
+</div>
+
+<!-- C14 · P15 · DEMANDA FORMATIVA -->
+<div class="card" id="c14">
+  <div class="card-tag">Visión a mediano plazo</div>
+  <div class="card-q">15. Pensando en los próximos 5 a 10 años, ¿cuál cree que es la principal demanda formativa que los jóvenes de la región sur de Misiones y norte de Corrientes reclaman y que las instituciones de Nivel Superior aún no han logrado cubrir eficazmente?</div>
+  <div class="card-hint">Por favor, redacte su respuesta con total libertad.</div>
+  <textarea class="q-textarea" name="p15" rows="5" placeholder="Su respuesta..."></textarea>
+  <div class="nav-row"><button class="btn btn-prev" onclick="prev()">←</button><button class="btn btn-submit" id="btn-enviar" onclick="submitForm()">Enviar respuestas ✓</button></div>
+</div>
+
+</div><!-- /card-wrap -->
+
+<div id="submit-state">
+  <div class="s-icon" id="s-icon">⏳</div>
+  <div class="s-title" id="s-title">Enviando...</div>
+  <div class="s-msg" id="s-msg">Estamos registrando sus respuestas. Por favor no cierre esta página.</div>
+</div>
+
+<footer class="site-footer">Instituto Superior La Inmaculada · Encuesta institucional · Respuestas anónimas</footer>
+
+<script>
+const APPS_SCRIPT_URL = "REEMPLAZAR_CON_URL_DE_APPS_SCRIPT";
+
+// Orden completo (con Nivel Superior)
+const ORDER_NS   = [0,1,2,3,4,5,6,7,8,9,10,11,12,13,14];
+// Orden sin Nivel Superior (se saltan P2=c1, P6=c5, P7=c6, P8=c7, P12=c11)
+const ORDER_BASE = [0,2,3,4,8,9,10,12,13,14];
+
+let order = ORDER_NS;
+let cur = 0;
+
+function isNivelSuperior() {
+  return document.querySelector('input[name="p1"][value="Nivel Superior"]:checked') !== null;
+}
+function updateOrder() {
+  order = isNivelSuperior() ? ORDER_NS : ORDER_BASE;
+}
+function updateProgress() {
+  const pos = order.indexOf(cur) + 1;
+  const total = order.length;
+  const pct = Math.round(((pos-1)/(total-1))*100);
+  document.getElementById('prog-fill').style.width = pct+'%';
+  document.getElementById('prog-pct').textContent = pct+'%';
+  document.getElementById('prog-label').textContent = `Pregunta ${pos} de ${total}`;
+}
+function next() {
+  if (cur === 0) updateOrder();
+  document.getElementById('c'+cur).classList.remove('active');
+  const idx = order.indexOf(cur);
+  const nextIdx = idx + 1;
+  if (nextIdx >= order.length) return;
+  cur = order[nextIdx];
+  document.getElementById('c'+cur).classList.add('active');
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function prev() {
+  document.getElementById('c'+cur).classList.remove('active');
+  const idx = order.indexOf(cur);
+  const prevIdx = idx - 1;
+  if (prevIdx < 0) return;
+  cur = order[prevIdx];
+  document.getElementById('c'+cur).classList.add('active');
+  updateProgress();
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// Otros radio
+document.addEventListener('change', function(e) {
+  const t = e.target;
+  if (t.name === 'p4') document.getElementById('p4_otro').classList.toggle('show', t.value==='otro');
+  if (t.name === 'p13') document.getElementById('p13_otro').classList.toggle('show', t.value==='otro');
+  if (t.name === 'p9_otro_chk') document.getElementById('p9_otro').classList.toggle('show', t.checked);
+  if (t.name === 'p10_otro_chk') document.getElementById('p10_otro').classList.toggle('show', t.checked);
+  if (t.name === 'p14_otro_chk') document.getElementById('p14_otro').classList.toggle('show', t.checked);
+
+  // Límites checkbox
+  const limits = {p5:2, p9:3, p10:3, p14:3};
+  for (const [name, max] of Object.entries(limits)) {
+    if (t.name === name || t.name === name+'_otro_chk') {
+      const n = document.querySelectorAll(`input[name="${name}"]:checked, input[name="${name}_otro_chk"]:checked`).length;
+      const w = document.getElementById('w-'+name);
+      if (w) w.style.display = n>max?'block':'none';
+      if (n>max) t.checked=false;
+    }
+  }
+});
+
+// Clima P11
+const CLIMA_DIMS = [
+  ['p11_dir','Relación y canales de comunicación con el Equipo Directivo'],
+  ['p11_col','Relación, colaboración y articulación con sus Colegas Docentes'],
+  ['p11_nod','Vínculo y trabajo diario con el Personal No Docente (Administrativos, Bedeles, Maestranza)'],
+  ['p11_alu','Relación, convivencia y respuesta pedagógica de los Estudiantes'],
+];
+const CLIMA_VALS = ['Muy agradable / Óptima','Agradable / Buena','Neutra / Indiferente','Difícil / Conflictiva','Muy conflictiva / Crítica'];
+(function(){
+  const w = document.getElementById('clima-p11');
+  CLIMA_DIMS.forEach(([name, label]) => {
+    const d = document.createElement('div');
+    d.className = 'clima-row';
+    d.innerHTML = `<div class="clima-label">${label}</div>
+      <div class="clima-opts">${CLIMA_VALS.map(v =>
+        `<label><input type="radio" name="${name}" value="${v}">${v}</label>`
+      ).join('')}</div>`;
+    w.appendChild(d);
+  });
+})();
+
+// Helpers
+function getR(n){const e=document.querySelector(`input[name="${n}"]:checked`);return e?e.value:'';}
+function getC(n){return Array.from(document.querySelectorAll(`input[name="${n}"]:checked`)).map(i=>i.value).join(' | ');}
+function getT(n){const e=document.querySelector(`[name="${n}"]`);return e&&e.value.trim()?e.value.trim():'';}
+
+function collectData() {
+  return {
+    timestamp: new Date().toISOString(),
+    p1:  getC('p1'),
+    p2:  getC('p2'),
+    p3:  getR('p3'),
+    p4:  getR('p4') === 'otro' ? getT('p4_otro') : getR('p4'),
+    p5:  getC('p5'),
+    p6:  getR('p6'),
+    p7:  getR('p7'),
+    p8:  getR('p8'),
+    p9:  [getC('p9'), getT('p9_otro')].filter(Boolean).join(' | '),
+    p10: [getC('p10'), getT('p10_otro')].filter(Boolean).join(' | '),
+    p11_dir: getR('p11_dir'),
+    p11_col: getR('p11_col'),
+    p11_nod: getR('p11_nod'),
+    p11_alu: getR('p11_alu'),
+    p12: getR('p12'),
+    p13: getR('p13') === 'otro' ? getT('p13_otro') : getR('p13'),
+    p14: [getC('p14'), getT('p14_otro')].filter(Boolean).join(' | '),
+    p15: getT('p15'),
+  };
+}
+
+async function submitForm() {
+  const btn = document.getElementById('btn-enviar');
+  btn.disabled=true; btn.textContent='Enviando...';
+  document.getElementById('card-wrap').style.display='none';
+  document.getElementById('progress-wrap').style.display='none';
+  document.getElementById('submit-state').classList.add('show');
+  try {
+    await fetch(APPS_SCRIPT_URL, {
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify(collectData())
+    });
+    document.getElementById('s-icon').textContent='✅';
+    document.getElementById('s-title').textContent='¡Muchas gracias!';
+    document.getElementById('s-msg').textContent='Sus respuestas fueron registradas. Su aporte es muy valioso para el desarrollo institucional del ISLI.';
+  } catch(err) {
+    document.getElementById('s-icon').textContent='❌';
+    document.getElementById('s-title').textContent='Hubo un problema al enviar';
+    document.getElementById('s-msg').textContent='Por favor intentá de nuevo. Error: '+err.message;
+    btn.disabled=false;
+  }
+}
+
+updateProgress();
+</script>
+</body>
+</html>
